@@ -1,0 +1,328 @@
+[
+  {
+    "id": 1,
+    "is_active": true,
+    "is_focused": true,
+    "wm_class": "kitty",
+    "wm_name": "kitty",
+    "platform_window_id": 1,
+    "background_opacity": 1.0,
+    "active_tab_history": [
+      1,
+      3,
+      2
+    ],
+    "last_focused": true,
+    "tabs": [
+      {
+        "id": 1,
+        "title": "user@host: ~",
+        "is_active": false,
+        "is_focused": false,
+        "layout": "fat",
+        "layout_opts": {},
+        "enabled_layouts": [
+          "fat",
+          "grid",
+          "splits",
+          "stack",
+          "tall"
+        ],
+        "groups": [],
+        "active_window_history": [
+          1
+        ],
+        "layout_state": {
+          "class": "Fat",
+          "opts": {},
+          "all_windows": {
+            "active_group_idx": 0,
+            "active_group_history": [
+              1
+            ],
+            "window_groups": [
+              {
+                "id": 1,
+                "window_ids": [
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        "windows": [
+          {
+            "id": 1,
+            "title": "user@host: /home/user",
+            "cwd": "/home/user",
+            "pid": 3999990001,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": false,
+            "is_active": true,
+            "at_prompt": true,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991001,
+                "cmdline": [
+                  "/bin/zsh"
+                ],
+                "cwd": "/home/user"
+              }
+            ],
+            "user_vars": {}
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "fixing the login bug",
+        "is_active": true,
+        "is_focused": true,
+        "layout": "grid",
+        "layout_opts": {},
+        "enabled_layouts": [
+          "fat",
+          "grid",
+          "splits",
+          "stack",
+          "tall"
+        ],
+        "groups": [],
+        "active_window_history": [
+          3,
+          2
+        ],
+        "layout_state": {
+          "class": "Grid",
+          "opts": {},
+          "biased_cols": {},
+          "biased_rows": {},
+          "all_windows": {
+            "active_group_idx": 0,
+            "active_group_history": [
+              3,
+              2
+            ],
+            "window_groups": [
+              {
+                "id": 2,
+                "window_ids": [
+                  2
+                ]
+              },
+              {
+                "id": 3,
+                "window_ids": [
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        "windows": [
+          {
+            "id": 2,
+            "title": "user@host: /home/user/src/api",
+            "cwd": "/home/user/src/api",
+            "pid": 3999990002,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": true,
+            "is_active": true,
+            "at_prompt": false,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991002,
+                "cmdline": [
+                  "claude",
+                  "--model",
+                  "opus"
+                ],
+                "cwd": "/home/user/src/api"
+              }
+            ],
+            "user_vars": {
+              "kit_tab_name": "api"
+            }
+          },
+          {
+            "id": 3,
+            "title": "user@host: /home/user/src/api",
+            "cwd": "/home/user/src/api",
+            "pid": 3999990003,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": false,
+            "is_active": false,
+            "at_prompt": true,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991003,
+                "cmdline": [
+                  "/bin/zsh"
+                ],
+                "cwd": "/home/user/src/api"
+              }
+            ],
+            "user_vars": {
+              "kit_tab_name": "api"
+            }
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "omp",
+        "is_active": false,
+        "is_focused": false,
+        "layout": "splits",
+        "layout_opts": {},
+        "enabled_layouts": [
+          "fat",
+          "grid",
+          "splits",
+          "stack",
+          "tall"
+        ],
+        "groups": [],
+        "active_window_history": [
+          4,
+          6
+        ],
+        "layout_state": {
+          "class": "Splits",
+          "opts": {
+            "default_axis_is_horizontal": true
+          },
+          "all_windows": {
+            "active_group_idx": 2,
+            "active_group_history": [
+              4,
+              6
+            ],
+            "window_groups": [
+              {
+                "id": 4,
+                "window_ids": [
+                  4
+                ]
+              },
+              {
+                "id": 5,
+                "window_ids": [
+                  5
+                ]
+              },
+              {
+                "id": 6,
+                "window_ids": [
+                  6
+                ]
+              }
+            ]
+          },
+          "pairs": {
+            "one": 4,
+            "two": {
+              "bias": 0.7,
+              "horizontal": false,
+              "one": 5,
+              "two": 6
+            }
+          }
+        },
+        "windows": [
+          {
+            "id": 4,
+            "title": "user@host: /home/user/src/web",
+            "cwd": "/home/user/src/web",
+            "pid": 3999990004,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": false,
+            "is_active": false,
+            "at_prompt": false,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991004,
+                "cmdline": [
+                  "omp"
+                ],
+                "cwd": "/home/user/src/web"
+              }
+            ],
+            "user_vars": {}
+          },
+          {
+            "id": 5,
+            "title": "user@host: /home/user/src/web",
+            "cwd": "/home/user/src/web",
+            "pid": 3999990005,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": false,
+            "is_active": false,
+            "at_prompt": true,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991005,
+                "cmdline": [
+                  "/bin/zsh"
+                ],
+                "cwd": "/home/user/src/web"
+              }
+            ],
+            "user_vars": {}
+          },
+          {
+            "id": 6,
+            "title": "user@host: /home/user/src/web/docs",
+            "cwd": "/home/user/src/web/docs",
+            "pid": 3999990006,
+            "cmdline": [
+              "/bin/zsh"
+            ],
+            "is_focused": false,
+            "is_active": true,
+            "at_prompt": false,
+            "env": {},
+            "columns": 80,
+            "lines": 24,
+            "foreground_processes": [
+              {
+                "pid": 3999991006,
+                "cmdline": [
+                  "vim",
+                  "README.md"
+                ],
+                "cwd": "/home/user/src/web/docs"
+              }
+            ],
+            "user_vars": {}
+          }
+        ]
+      }
+    ]
+  }
+]
