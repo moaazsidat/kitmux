@@ -73,10 +73,30 @@ enum Command {
         #[arg(long, short = 'n')]
         dry_run: bool,
     },
+    /// Change tabs in ways kit remembers.
+    Tab {
+        #[command(subcommand)]
+        action: TabAction,
+    },
     /// Save automatically on a schedule (a systemd user timer).
     Timer {
         #[command(subcommand)]
         action: TimerAction,
+    },
+}
+
+#[derive(Subcommand)]
+enum TabAction {
+    /// Set a tab's properties.
+    Set {
+        /// Name the tab. The name is its title from now on and is restored by
+        /// `kit resume`; an empty name clears it.
+        #[arg(long)]
+        name: String,
+        /// The tab's kitty id. By default, the tab kit runs in, else the
+        /// active tab.
+        #[arg(long)]
+        tab: Option<u64>,
     },
 }
 
@@ -116,6 +136,9 @@ fn main() {
                 dry_run,
             },
         ),
+        Command::Tab { action } => match action {
+            TabAction::Set { name, tab } => cmd::tab::set_name(socket, tab, &name),
+        },
         Command::Timer { action } => match action {
             TimerAction::Install { every, keep } => cmd::timer::install(&every, keep),
             TimerAction::Remove => cmd::timer::remove(),
