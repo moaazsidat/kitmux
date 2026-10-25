@@ -3,6 +3,7 @@
 pub mod ls;
 pub mod resume;
 pub mod save;
+pub mod timer;
 
 use std::fmt::Write;
 

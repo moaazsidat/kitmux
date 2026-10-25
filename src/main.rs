@@ -73,6 +73,28 @@ enum Command {
         #[arg(long, short = 'n')]
         dry_run: bool,
     },
+    /// Save automatically on a schedule (a systemd user timer).
+    Timer {
+        #[command(subcommand)]
+        action: TimerAction,
+    },
+}
+
+#[derive(Subcommand)]
+enum TimerAction {
+    /// Install and start the timer.
+    Install {
+        /// How often to save, as a systemd time span.
+        #[arg(long, default_value = "1h")]
+        every: String,
+        /// How many snapshots to keep.
+        #[arg(long, default_value_t = 168)]
+        keep: usize,
+    },
+    /// Stop and remove the timer. Snapshots are kept.
+    Remove,
+    /// Show when it last ran and runs next.
+    Status,
 }
 
 fn main() {
@@ -94,6 +116,11 @@ fn main() {
                 dry_run,
             },
         ),
+        Command::Timer { action } => match action {
+            TimerAction::Install { every, keep } => cmd::timer::install(&every, keep),
+            TimerAction::Remove => cmd::timer::remove(),
+            TimerAction::Status => cmd::timer::status(),
+        },
     };
     if let Err(e) = result {
         eprintln!("kit: {e:#}");
