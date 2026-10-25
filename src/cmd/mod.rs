@@ -1,6 +1,7 @@
 //! One module per subcommand.
 
 pub mod ls;
+pub mod resume;
 pub mod save;
 
 use std::fmt::Write;

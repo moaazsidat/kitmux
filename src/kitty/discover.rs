@@ -40,12 +40,8 @@ fn candidates() -> Vec<Addr> {
             out.push(a);
         }
     }
-    if let Some(conf) = config_file() {
-        if let Ok(text) = fs::read_to_string(&conf) {
-            if let Some(listen) = parse_listen_on(&text) {
-                out.extend(expand_listen_on(&listen));
-            }
-        }
+    if let Some(listen) = conf_option("listen_on").filter(|v| v != "none") {
+        out.extend(expand_listen_on(&listen));
     }
     let mut dirs = vec![PathBuf::from("/tmp")];
     if let Some(rt) = std::env::var_os("XDG_RUNTIME_DIR") {
@@ -68,19 +64,30 @@ fn config_file() -> Option<PathBuf> {
     Some(dir.join("kitty.conf"))
 }
 
-/// The effective `listen_on` value in a kitty.conf: the last one wins, as in
-/// kitty. `include`d files are not followed.
+/// An option's value in the user's kitty.conf.
+pub fn conf_option(name: &str) -> Option<String> {
+    parse_option(&fs::read_to_string(config_file()?).ok()?, name)
+}
+
+/// The effective `listen_on` value in a kitty.conf.
+#[cfg(test)]
 pub fn parse_listen_on(conf: &str) -> Option<String> {
+    parse_option(conf, "listen_on").filter(|v| v != "none")
+}
+
+/// An option's effective value in a kitty.conf: the last one wins, as in
+/// kitty. `include`d files are not followed.
+fn parse_option(conf: &str, name: &str) -> Option<String> {
     conf.lines()
         .filter_map(|l| {
             let l = l.trim();
-            let rest = l.strip_prefix("listen_on")?;
+            let rest = l.strip_prefix(name)?;
             if !rest.starts_with(char::is_whitespace) {
                 return None;
             }
             Some(rest.trim().to_string())
         })
-        .filter(|v| !v.is_empty() && v != "none")
+        .filter(|v| !v.is_empty())
         .last()
 }
 

@@ -5,6 +5,7 @@ mod agent;
 mod cmd;
 mod kitty;
 mod procfs;
+mod restore;
 mod snapshot;
 mod store;
 
@@ -48,6 +49,30 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Restore a snapshot's tabs and layouts, resuming its agent sessions.
+    ///
+    /// Tabs are added to the running kitty, leaving the ones open now alone;
+    /// with no kitty running, one is started. Tabs whose agent sessions are
+    /// already running are skipped.
+    Resume {
+        /// A path, a number from `kit ls`, or `latest`. By default, the newest
+        /// snapshot of a kitty that is no longer running.
+        snapshot: Option<String>,
+        /// Restore the layout only: every window gets a shell.
+        #[arg(long)]
+        no_agents: bool,
+        /// Also continue turns that were cut off, where the agent supports
+        /// it (omp --restore).
+        #[arg(long)]
+        continue_turns: bool,
+        /// Restore tabs even if their agent sessions are running elsewhere;
+        /// those windows get a shell rather than a second copy.
+        #[arg(long)]
+        force: bool,
+        /// Show what would be restored without doing it.
+        #[arg(long, short = 'n')]
+        dry_run: bool,
+    },
 }
 
 fn main() {
@@ -57,6 +82,18 @@ fn main() {
         Command::Save { timer, keep } => cmd::save::run(socket, cmd::save::Options { timer, keep }),
         Command::Ls { json } => cmd::ls::list(json),
         Command::Show { snapshot, json } => cmd::ls::show(&snapshot, json),
+        Command::Resume { snapshot, no_agents, continue_turns, force, dry_run } => cmd::resume::run(
+            socket,
+            cmd::resume::Options {
+                snapshot,
+                restore: restore::Options {
+                    agents: !no_agents,
+                    resume: agent::ResumeOptions { continue_turn: continue_turns },
+                    force,
+                },
+                dry_run,
+            },
+        ),
     };
     if let Err(e) = result {
         eprintln!("kit: {e:#}");
