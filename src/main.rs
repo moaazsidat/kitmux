@@ -1,1 +1,3 @@
+mod kitty;
+
 fn main() {}
