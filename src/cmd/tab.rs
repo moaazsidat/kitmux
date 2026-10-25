@@ -28,10 +28,20 @@ pub fn set_name(socket: Option<&str>, tab: Option<u64>, name: &str) -> Result<()
     }
     .ok_or_else(|| anyhow!("no such tab"))?;
 
-    client.call("set-tab-title", json!({ "title": name, "match": format!("id:{}", target.id) }))?;
-    let var = if name.is_empty() { TAB_NAME_VAR.to_string() } else { format!("{TAB_NAME_VAR}={name}") };
+    client.call(
+        "set-tab-title",
+        json!({ "title": name, "match": format!("id:{}", target.id) }),
+    )?;
+    let var = if name.is_empty() {
+        TAB_NAME_VAR.to_string()
+    } else {
+        format!("{TAB_NAME_VAR}={name}")
+    };
     for w in &target.windows {
-        client.call("set-user-vars", json!({ "var": [var], "match": format!("id:{}", w.id) }))?;
+        client.call(
+            "set-user-vars",
+            json!({ "var": [var], "match": format!("id:{}", w.id) }),
+        )?;
     }
     if name.is_empty() {
         println!("tab {} unnamed", target.id);
@@ -54,4 +64,3 @@ fn client(socket: Option<&str>) -> Result<Client> {
         _ => bail!("more than one kitty is running; choose one with --socket"),
     }
 }
-

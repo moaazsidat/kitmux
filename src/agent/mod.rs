@@ -147,7 +147,12 @@ mod tests {
         assert_eq!(find_program(&v(&["/opt/bin/claude"]), "claude", &[]), Some(1));
         assert_eq!(
             find_program(
-                &v(&["node", "--no-warnings", "/usr/lib/node_modules/@anthropic-ai/claude-code/cli.js", "-c"]),
+                &v(&[
+                    "node",
+                    "--no-warnings",
+                    "/usr/lib/node_modules/@anthropic-ai/claude-code/cli.js",
+                    "-c"
+                ]),
                 "claude",
                 &["@anthropic-ai/claude-code"]
             ),

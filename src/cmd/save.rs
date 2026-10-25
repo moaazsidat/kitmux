@@ -29,12 +29,11 @@ pub fn run(socket: Option<&str>, opts: Options) -> Result<()> {
     let snap = Snapshot::capture(&clients, reason)?;
     let store = Store::open_default()?;
 
-    if opts.timer {
-        if let Some(last) = store.list()?.first() {
-            if last.snapshot.fingerprint() == snap.fingerprint() {
-                return Ok(());
-            }
-        }
+    if opts.timer
+        && let Some(last) = store.list()?.first()
+        && last.snapshot.fingerprint() == snap.fingerprint()
+    {
+        return Ok(());
     }
 
     let path = store.save(&snap)?;

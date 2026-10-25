@@ -77,7 +77,10 @@ pub enum Place {
 /// What restoring `snap` would create. `running` is the agent sessions running
 /// now, as `(kind, id)`; tabs holding one are left out unless forced.
 pub fn plan(snap: &Snapshot, running: &HashSet<(String, String)>, opts: Options) -> Plan {
-    let mut out = Plan { os_windows: Vec::new(), skipped: Vec::new() };
+    let mut out = Plan {
+        os_windows: Vec::new(),
+        skipped: Vec::new(),
+    };
     for inst in &snap.instances {
         for o in &inst.os_windows {
             let mut tabs = Vec::new();
@@ -104,7 +107,11 @@ pub fn plan(snap: &Snapshot, running: &HashSet<(String, String)>, opts: Options)
                 tabs.push(plan_tab(t, running, opts));
             }
             if !tabs.is_empty() {
-                out.os_windows.push(OsWindowPlan { tabs, active_tab, is_active: o.is_active });
+                out.os_windows.push(OsWindowPlan {
+                    tabs,
+                    active_tab,
+                    is_active: o.is_active,
+                });
             }
         }
     }
@@ -114,7 +121,11 @@ pub fn plan(snap: &Snapshot, running: &HashSet<(String, String)>, opts: Options)
 fn plan_tab(t: &Tab, running: &HashSet<(String, String)>, opts: Options) -> TabPlan {
     let order = window_order(t);
     let focused_id = t.focused().map(|w| w.id);
-    let vars: Vec<String> = t.name.iter().map(|n| format!("{}={n}", snapshot::TAB_NAME_VAR)).collect();
+    let vars: Vec<String> = t
+        .name
+        .iter()
+        .map(|n| format!("{}={n}", snapshot::TAB_NAME_VAR))
+        .collect();
     let mut windows = Vec::new();
     let mut focus = 0;
     for (idx, place) in order {
@@ -140,9 +151,21 @@ fn plan_tab(t: &Tab, running: &HashSet<(String, String)>, opts: Options) -> TabP
             }
             None => (None, Vec::new(), None),
         };
-        windows.push(WindowPlan { cwd: w.cwd.clone(), args, env, vars: vars.clone(), place, resumes });
+        windows.push(WindowPlan {
+            cwd: w.cwd.clone(),
+            args,
+            env,
+            vars: vars.clone(),
+            place,
+            resumes,
+        });
     }
-    TabPlan { layout: t.layout.clone(), title: t.name.clone(), windows, focus }
+    TabPlan {
+        layout: t.layout.clone(),
+        title: t.name.clone(),
+        windows,
+        focus,
+    }
 }
 
 /// The shell to run an agent under: the window's own if it was started with a
@@ -164,15 +187,15 @@ fn shell_for(cmdline: &[String]) -> String {
 fn window_order(t: &Tab) -> Vec<(usize, Place)> {
     let index: HashMap<u64, usize> = t.windows.iter().enumerate().map(|(i, w)| (w.id, i)).collect();
     let mut out = Vec::new();
-    if t.layout == "splits" {
-        if let Some(pairs) = t.layout_state.get("pairs") {
-            let groups = group_windows(&t.layout_state);
-            let leaf = |g: u64| groups.get(&g).copied().unwrap_or(g);
-            if let Some(tree) = Node::parse(pairs, &leaf, &index) {
-                let first = tree.first();
-                out.push((first, Place::First));
-                tree.emit(first, &mut out);
-            }
+    if t.layout == "splits"
+        && let Some(pairs) = t.layout_state.get("pairs")
+    {
+        let groups = group_windows(&t.layout_state);
+        let leaf = |g: u64| groups.get(&g).copied().unwrap_or(g);
+        if let Some(tree) = Node::parse(pairs, &leaf, &index) {
+            let first = tree.first();
+            out.push((first, Place::First));
+            tree.emit(first, &mut out);
         }
     }
     // Everything not placed by a split tree goes after the last window.
@@ -211,7 +234,12 @@ fn group_windows(layout_state: &Value) -> HashMap<u64, u64> {
 /// A splits layout's tree, with leaves resolved to window indexes.
 enum Node {
     Leaf(usize),
-    Pair { one: Box<Node>, two: Box<Node>, horizontal: bool, bias: f64 },
+    Pair {
+        one: Box<Node>,
+        two: Box<Node>,
+        horizontal: bool,
+        bias: f64,
+    },
 }
 
 impl Node {
@@ -246,10 +274,23 @@ impl Node {
     /// exists. Splitting the first window of `one` makes the pair; each side
     /// then grows from its own first window.
     fn emit(&self, first: usize, out: &mut Vec<(usize, Place)>) {
-        if let Node::Pair { one, two, horizontal, bias } = self {
+        if let Node::Pair {
+            one,
+            two,
+            horizontal,
+            bias,
+        } = self
+        {
             let second = two.first();
             let share = ((1.0 - bias) * 100.0).round().clamp(1.0, 99.0) as u8;
-            out.push((second, Place::Split { of: first, vertical: *horizontal, bias: share }));
+            out.push((
+                second,
+                Place::Split {
+                    of: first,
+                    vertical: *horizontal,
+                    bias: share,
+                },
+            ));
             one.emit(first, out);
             two.emit(second, out);
         }
@@ -328,7 +369,10 @@ pub fn execute(plan: &Plan, target: &Target) -> Result<Vec<u64>> {
                     anchor.get_or_insert(id);
                     // The layout must be in place before windows join it, or
                     // splits would be laid out by another layout's rules.
-                    if let Err(e) = c.call("goto-layout", json!({ "layout": tab.layout, "match": format!("window_id:{id}") })) {
+                    if let Err(e) = c.call(
+                        "goto-layout",
+                        json!({ "layout": tab.layout, "match": format!("window_id:{id}") }),
+                    ) {
                         eprintln!("kit: keeping kitty's default layout for a tab: {e:#}");
                     }
                 }
@@ -358,7 +402,11 @@ mod tests {
     use super::*;
     use crate::snapshot::tests::fixture;
 
-    const OPTS: Options = Options { agents: true, resume: ResumeOptions { continue_turn: false }, force: false };
+    const OPTS: Options = Options {
+        agents: true,
+        resume: ResumeOptions { continue_turn: false },
+        force: false,
+    };
 
     fn with_agents() -> Snapshot {
         let mut s = fixture();
@@ -390,7 +438,10 @@ mod tests {
         let o = &p.os_windows[0];
         assert_eq!(o.tabs.len(), 3);
         assert_eq!(o.active_tab, 1);
-        assert_eq!(o.tabs.iter().map(|t| t.layout.as_str()).collect::<Vec<_>>(), ["fat", "grid", "splits"]);
+        assert_eq!(
+            o.tabs.iter().map(|t| t.layout.as_str()).collect::<Vec<_>>(),
+            ["fat", "grid", "splits"]
+        );
 
         // Only a tab named with kit gets a title.
         assert_eq!(o.tabs[0].title, None);
@@ -411,7 +462,10 @@ mod tests {
         // A window with no agent gets the default shell.
         assert_eq!(p.os_windows[0].tabs[1].windows[1].args, None);
 
-        let restore = Options { resume: ResumeOptions { continue_turn: true }, ..OPTS };
+        let restore = Options {
+            resume: ResumeOptions { continue_turn: true },
+            ..OPTS
+        };
         let p = plan(&with_agents(), &HashSet::new(), restore);
         let w = &p.os_windows[0].tabs[2].windows[0];
         assert_eq!(w.args.as_deref().unwrap()[2], "omp --restore o-1; exec /bin/zsh");
@@ -448,8 +502,22 @@ mod tests {
             places,
             [
                 ("/home/user/src/web", Place::First),
-                ("/home/user/src/web", Place::Split { of: 0, vertical: true, bias: 50 }),
-                ("/home/user/src/web/docs", Place::Split { of: 1, vertical: false, bias: 30 }),
+                (
+                    "/home/user/src/web",
+                    Place::Split {
+                        of: 0,
+                        vertical: true,
+                        bias: 50
+                    }
+                ),
+                (
+                    "/home/user/src/web/docs",
+                    Place::Split {
+                        of: 1,
+                        vertical: false,
+                        bias: 30
+                    }
+                ),
             ]
         );
         assert_eq!(tab.focus, 2);
@@ -481,9 +549,30 @@ mod tests {
             order,
             [
                 (0, Place::First),
-                (2, Place::Split { of: 0, vertical: true, bias: 50 }),
-                (1, Place::Split { of: 0, vertical: false, bias: 50 }),
-                (3, Place::Split { of: 2, vertical: false, bias: 50 }),
+                (
+                    2,
+                    Place::Split {
+                        of: 0,
+                        vertical: true,
+                        bias: 50
+                    }
+                ),
+                (
+                    1,
+                    Place::Split {
+                        of: 0,
+                        vertical: false,
+                        bias: 50
+                    }
+                ),
+                (
+                    3,
+                    Place::Split {
+                        of: 2,
+                        vertical: false,
+                        bias: 50
+                    }
+                ),
             ]
         );
     }

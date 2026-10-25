@@ -26,7 +26,8 @@ pub fn shell_join(args: &[String]) -> String {
             out.push(' ');
         }
         let safe = !a.is_empty()
-            && a.chars().all(|c| c.is_ascii_alphanumeric() || "-_./=:,+@%^".contains(c));
+            && a.chars()
+                .all(|c| c.is_ascii_alphanumeric() || "-_./=:,+@%^".contains(c));
         if safe {
             out.push_str(a);
         } else {
@@ -43,7 +44,10 @@ mod tests {
     #[test]
     fn quotes_for_the_shell() {
         let v = |s: &[&str]| s.iter().map(|x| x.to_string()).collect::<Vec<_>>();
-        assert_eq!(shell_join(&v(&["claude", "--resume", "abc-1"])), "claude --resume abc-1");
+        assert_eq!(
+            shell_join(&v(&["claude", "--resume", "abc-1"])),
+            "claude --resume abc-1"
+        );
         assert_eq!(shell_join(&v(&["echo", "it's here", ""])), r"echo 'it'\''s here' ''");
     }
 }

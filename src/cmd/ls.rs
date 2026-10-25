@@ -35,7 +35,10 @@ pub fn list(json: bool) -> Result<()> {
         println!("no snapshots yet in {} — run `kit save`", store.dir().display());
         return Ok(());
     }
-    println!("{:>3}  {:<16}  {:>5}  {:>4}  {:>7}  {:<24}  {:<6}", "#", "TAKEN", "AGE", "TABS", "WINDOWS", "AGENTS", "BY");
+    println!(
+        "{:>3}  {:<16}  {:>5}  {:>4}  {:>7}  {:<24}  {:<6}",
+        "#", "TAKEN", "AGE", "TABS", "WINDOWS", "AGENTS", "BY"
+    );
     for (i, e) in entries.iter().enumerate() {
         let s = &e.snapshot;
         let note = if s.of_running_kitty() { "  (this kitty)" } else { "" };
@@ -50,7 +53,11 @@ pub fn list(json: bool) -> Result<()> {
             s.reason,
         );
     }
-    println!("\n{} snapshots in {}. `kit show <#>` for detail.", entries.len(), store.dir().display());
+    println!(
+        "\n{} snapshots in {}. `kit show <#>` for detail.",
+        entries.len(),
+        store.dir().display()
+    );
     Ok(())
 }
 
@@ -80,16 +87,22 @@ pub fn print_tree(entry: &Entry) {
             println!("  os window {}{}", oi + 1, if o.is_active { " *" } else { "" });
             for (ti, t) in o.tabs.iter().enumerate() {
                 let label = t.name.clone().unwrap_or_else(|| format!("{:?}", t.title));
-                println!("    tab {}{} [{}] {label}", ti + 1, if t.is_active { " *" } else { "" }, t.layout);
+                println!(
+                    "    tab {}{} [{}] {label}",
+                    ti + 1,
+                    if t.is_active { " *" } else { "" },
+                    t.layout
+                );
                 for w in &t.windows {
                     let focus = if w.is_focused { "*" } else { " " };
                     let what = match &w.agent {
-                        Some(a) => format!("{} {} → {}", a.kind, a.session_id, shell_join(&a.resume_command(ResumeOptions::default()))),
-                        None => w
-                            .foreground
-                            .last()
-                            .map(|p| shell_join(&p.cmdline))
-                            .unwrap_or_default(),
+                        Some(a) => format!(
+                            "{} {} → {}",
+                            a.kind,
+                            a.session_id,
+                            shell_join(&a.resume_command(ResumeOptions::default()))
+                        ),
+                        None => w.foreground.last().map(|p| shell_join(&p.cmdline)).unwrap_or_default(),
                     };
                     println!("      {focus} {:<32} {what}", tilde(&w.cwd));
                 }
@@ -106,7 +119,11 @@ fn agent_summary(s: &Snapshot) -> String {
     if kinds.is_empty() {
         return "-".to_string();
     }
-    kinds.iter().map(|(k, n)| format!("{n} {k}")).collect::<Vec<_>>().join(", ")
+    kinds
+        .iter()
+        .map(|(k, n)| format!("{n} {k}"))
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 fn age(s: &Snapshot) -> String {

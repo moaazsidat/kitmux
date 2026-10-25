@@ -44,7 +44,13 @@ pub fn status() -> Result<()> {
         .context("running systemctl")?;
     print!("{}", String::from_utf8_lossy(&out.stdout));
     let last = Command::new("systemctl")
-        .args(["--user", "status", "--no-pager", "--lines=5", &format!("{NAME}.service")])
+        .args([
+            "--user",
+            "status",
+            "--no-pager",
+            "--lines=5",
+            &format!("{NAME}.service"),
+        ])
         .output()?;
     print!("{}", String::from_utf8_lossy(&last.stdout));
     Ok(())
@@ -119,7 +125,10 @@ mod tests {
     #[test]
     fn writes_units() {
         let s = service_unit(Path::new("/opt/kit 100%/kit"), 24);
-        assert!(s.contains("ExecStart=\"/opt/kit 100%%/kit\" save --timer --keep 24\n"), "{s}");
+        assert!(
+            s.contains("ExecStart=\"/opt/kit 100%%/kit\" save --timer --keep 24\n"),
+            "{s}"
+        );
         let t = timer_unit("1h");
         assert!(t.contains("OnUnitActiveSec=1h\n"));
         assert!(t.contains("WantedBy=timers.target"));

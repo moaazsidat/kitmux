@@ -205,7 +205,12 @@ impl Instance {
             .find_map(|w| procfs::ppid(w.pid))
             .and_then(ProcessIdentity::of);
         let os_windows = parsed.into_iter().map(OsWindow::from_ls).collect();
-        Ok(Instance { socket: client.addr.to_string(), process, os_windows, raw })
+        Ok(Instance {
+            socket: client.addr.to_string(),
+            process,
+            os_windows,
+            raw,
+        })
     }
 }
 
@@ -249,7 +254,11 @@ impl Window {
         let foreground: Vec<Process> = w
             .foreground_processes
             .into_iter()
-            .map(|p| Process { pid: p.pid, cmdline: p.cmdline, cwd: p.cwd })
+            .map(|p| Process {
+                pid: p.pid,
+                cmdline: p.cmdline,
+                cwd: p.cwd,
+            })
             .collect();
         let agent = foreground.iter().find_map(|p| agent::detect(p.pid, &p.cmdline));
         // An agent's own directory is where it must be resumed; the window's
@@ -281,7 +290,11 @@ pub mod tests {
     /// are made up.
     pub fn fixture() -> Snapshot {
         let raw: Value = serde_json::from_str(include_str!("../tests/fixtures/ls.json")).unwrap();
-        let os_windows = kitty::ls::parse(&raw).unwrap().into_iter().map(OsWindow::from_ls).collect();
+        let os_windows = kitty::ls::parse(&raw)
+            .unwrap()
+            .into_iter()
+            .map(OsWindow::from_ls)
+            .collect();
         Snapshot {
             format: FORMAT,
             kit_version: "0.0.0".into(),

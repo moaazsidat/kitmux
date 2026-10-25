@@ -74,7 +74,17 @@ mod tests {
 
     #[test]
     fn keeps_flags_and_their_values() {
-        let args = v(&["--model", "big", "--yolo", "-n", "name", "--add-dir", "a", "b", "--verbose"]);
+        let args = v(&[
+            "--model",
+            "big",
+            "--yolo",
+            "-n",
+            "name",
+            "--add-dir",
+            "a",
+            "b",
+            "--verbose",
+        ]);
         assert_eq!(keep(&args, &FLAGS), args);
     }
 

@@ -39,7 +39,9 @@ pub fn run(socket: Option<&str>, opts: Options) -> Result<()> {
     restore::execute(&plan, &target)?;
     // A kitty kit started opens with a shell nobody asked for.
     for id in bootstrap {
-        let _ = target.client.call("close-window", json!({ "match": format!("id:{id}") }));
+        let _ = target
+            .client
+            .call("close-window", json!({ "match": format!("id:{id}") }));
     }
 
     let tabs: usize = plan.os_windows.iter().map(|o| o.tabs.len()).sum();
@@ -71,7 +73,9 @@ fn pick(reference: Option<&str>) -> Result<Entry> {
     }
     match all.find(|e| !e.snapshot.of_running_kitty()) {
         Some(e) => {
-            println!("(newest snapshot is of the kitty running now; using the last one before it — `kit resume latest` for the newest)");
+            println!(
+                "(newest snapshot is of the kitty running now; using the last one before it — `kit resume latest` for the newest)"
+            );
             Ok(e)
         }
         None => Ok(newest),
@@ -87,17 +91,32 @@ fn target(socket: Option<&str>) -> Result<(Target, Vec<u64>)> {
 
     if let Some(c) = here.as_ref().and_then(|h| clients.iter().find(|c| &c.addr == h)) {
         // Run from inside kitty: tabs go next to the window kit was run in.
-        return Ok((Target { client: c.clone(), window }, Vec::new()));
+        return Ok((
+            Target {
+                client: c.clone(),
+                window,
+            },
+            Vec::new(),
+        ));
     }
     match clients.len() {
         0 => {
             let (client, bootstrap) = spawn_kitty()?;
             Ok((Target { client, window: None }, bootstrap))
         }
-        1 => Ok((Target { client: clients[0].clone(), window: None }, Vec::new())),
+        1 => Ok((
+            Target {
+                client: clients[0].clone(),
+                window: None,
+            },
+            Vec::new(),
+        )),
         _ => {
             let list: Vec<String> = clients.iter().map(|c| c.addr.to_string()).collect();
-            bail!("more than one kitty is running; choose one with --socket: {}", list.join(", "))
+            bail!(
+                "more than one kitty is running; choose one with --socket: {}",
+                list.join(", ")
+            )
         }
     }
 }
@@ -160,7 +179,11 @@ fn print_plan(plan: &Plan) {
                         format!("{} {} ({bias}%)", if *vertical { "beside" } else { "below" }, of + 1)
                     }
                 };
-                let what = w.args.as_ref().map(|a| shell_join(a)).unwrap_or_else(|| "shell".to_string());
+                let what = w
+                    .args
+                    .as_ref()
+                    .map(|a| shell_join(a))
+                    .unwrap_or_else(|| "shell".to_string());
                 let focus = if wi == t.focus { "*" } else { " " };
                 println!("    {focus}{} {:<14} {:<28} {what}", wi + 1, place, tilde(&w.cwd));
             }

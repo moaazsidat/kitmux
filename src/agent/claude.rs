@@ -123,7 +123,10 @@ mod tests {
     #[test]
     fn reads_the_pid_file() {
         let file = br#"{"pid":42,"sessionId":"0b6f1c2e-0000-4000-8000-000000000001","cwd":"/work"}"#;
-        assert_eq!(session_id_from(file).as_deref(), Some("0b6f1c2e-0000-4000-8000-000000000001"));
+        assert_eq!(
+            session_id_from(file).as_deref(),
+            Some("0b6f1c2e-0000-4000-8000-000000000001")
+        );
         assert_eq!(session_id_from(br#"{"pid":42}"#), None);
         assert_eq!(session_id_from(b"not json"), None);
     }

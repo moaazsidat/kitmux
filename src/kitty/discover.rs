@@ -35,10 +35,10 @@ pub fn find(explicit: Option<&str>) -> anyhow::Result<Vec<Client>> {
 /// Addresses worth trying, most specific first.
 fn candidates() -> Vec<Addr> {
     let mut out = Vec::new();
-    if let Ok(v) = std::env::var("KITTY_LISTEN_ON") {
-        if let Ok(a) = Addr::parse(&v) {
-            out.push(a);
-        }
+    if let Ok(v) = std::env::var("KITTY_LISTEN_ON")
+        && let Ok(a) = Addr::parse(&v)
+    {
+        out.push(a);
     }
     if let Some(listen) = conf_option("listen_on").filter(|v| v != "none") {
         out.extend(expand_listen_on(&listen));
@@ -87,8 +87,7 @@ fn parse_option(conf: &str, name: &str) -> Option<String> {
             }
             Some(rest.trim().to_string())
         })
-        .filter(|v| !v.is_empty())
-        .last()
+        .rfind(|v| !v.is_empty())
 }
 
 /// The addresses a `listen_on` value can produce once kitty has added its pid.
@@ -104,12 +103,18 @@ fn expand_listen_on(value: &str) -> Vec<Addr> {
                 Some(i) => {
                     let p = Path::new(&s[..i]);
                     let dir = p.parent().unwrap_or(Path::new("/")).to_path_buf();
-                    let base = p.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_default();
+                    let base = p
+                        .file_name()
+                        .map(|f| f.to_string_lossy().to_string())
+                        .unwrap_or_default();
                     (dir, base)
                 }
                 None => {
                     let dir = path.parent().unwrap_or(Path::new("/")).to_path_buf();
-                    let base = path.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_default();
+                    let base = path
+                        .file_name()
+                        .map(|f| f.to_string_lossy().to_string())
+                        .unwrap_or_default();
                     (dir, base)
                 }
             };
@@ -122,10 +127,10 @@ fn expand_listen_on(value: &str) -> Vec<Addr> {
 /// Expands `~`, `$VAR`, and `${VAR}`, as kitty does for `listen_on`.
 pub fn expand_vars(s: &str) -> String {
     let mut s = s.to_string();
-    if let Some(rest) = s.strip_prefix("unix:~/") {
-        if let Some(home) = std::env::var_os("HOME") {
-            s = format!("unix:{}/{rest}", home.to_string_lossy());
-        }
+    if let Some(rest) = s.strip_prefix("unix:~/")
+        && let Some(home) = std::env::var_os("HOME")
+    {
+        s = format!("unix:{}/{rest}", home.to_string_lossy());
     }
     let mut out = String::new();
     let mut chars = s.chars().peekable();

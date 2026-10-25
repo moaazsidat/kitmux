@@ -30,7 +30,9 @@ impl Store {
     }
 
     pub fn at(root: PathBuf) -> Store {
-        Store { dir: root.join("snapshots") }
+        Store {
+            dir: root.join("snapshots"),
+        }
     }
 
     pub fn dir(&self) -> &Path {
@@ -93,21 +95,31 @@ impl Store {
     /// newest), or by path.
     pub fn resolve(&self, reference: &str) -> Result<Entry> {
         if reference == "latest" {
-            return self.list()?.into_iter().next().ok_or_else(|| anyhow!("no snapshots yet"));
+            return self
+                .list()?
+                .into_iter()
+                .next()
+                .ok_or_else(|| anyhow!("no snapshots yet"));
         }
         if let Ok(n) = reference.parse::<usize>() {
             let all = self.list()?;
             let count = all.len();
             return all
                 .into_iter()
-                .nth(n.checked_sub(1).ok_or_else(|| anyhow!("snapshots are numbered from 1"))?)
+                .nth(
+                    n.checked_sub(1)
+                        .ok_or_else(|| anyhow!("snapshots are numbered from 1"))?,
+                )
                 .ok_or_else(|| anyhow!("there are only {count} snapshots"));
         }
         let path = PathBuf::from(reference);
         if !path.exists() {
             bail!("no snapshot {reference:?}: give a path, a number from `kit ls`, or `latest`");
         }
-        Ok(Entry { snapshot: load(&path)?, path })
+        Ok(Entry {
+            snapshot: load(&path)?,
+            path,
+        })
     }
 
     /// Deletes all but the newest `keep` snapshots, returning how many went.

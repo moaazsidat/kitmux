@@ -42,7 +42,12 @@ pub fn start_ticks(pid: u32) -> Option<u64> {
 /// This boot's id, so that process identities from before a reboot never
 /// match ones after it.
 pub fn boot_id() -> Option<String> {
-    Some(fs::read_to_string("/proc/sys/kernel/random/boot_id").ok()?.trim().to_string())
+    Some(
+        fs::read_to_string("/proc/sys/kernel/random/boot_id")
+            .ok()?
+            .trim()
+            .to_string(),
+    )
 }
 
 /// The files the process has open.

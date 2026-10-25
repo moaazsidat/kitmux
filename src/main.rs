@@ -124,13 +124,21 @@ fn main() {
         Command::Save { timer, keep } => cmd::save::run(socket, cmd::save::Options { timer, keep }),
         Command::Ls { json } => cmd::ls::list(json),
         Command::Show { snapshot, json } => cmd::ls::show(&snapshot, json),
-        Command::Resume { snapshot, no_agents, continue_turns, force, dry_run } => cmd::resume::run(
+        Command::Resume {
+            snapshot,
+            no_agents,
+            continue_turns,
+            force,
+            dry_run,
+        } => cmd::resume::run(
             socket,
             cmd::resume::Options {
                 snapshot,
                 restore: restore::Options {
                     agents: !no_agents,
-                    resume: agent::ResumeOptions { continue_turn: continue_turns },
+                    resume: agent::ResumeOptions {
+                        continue_turn: continue_turns,
+                    },
                     force,
                 },
                 dry_run,
