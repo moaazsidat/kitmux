@@ -46,10 +46,13 @@ listen_on unix:/tmp/kitty
 
 kitty adds its pid to that path (`/tmp/kitty-1234`). kitmux finds it either way.
 
-Optionally, bind a key to save right away:
+Optionally, bind keys to save right away, and to name the current tab. The second replaces
+kitty's own tab rename (`set_tab_title`), whose names kitmux can't tell apart from titles
+programs set:
 
 ```conf
 map kitty_mod+s launch --type=background kitmux save
+map kitty_mod+alt+t launch --type=overlay kitmux tab name
 ```
 
 ## Commands
@@ -60,7 +63,8 @@ map kitty_mod+s launch --type=background kitmux save
 | `kitmux ls` | List snapshots, newest first. `--json` for scripts. |
 | `kitmux show [snapshot]` | What a snapshot holds, and the command each agent resumes with. `--json` prints all of it. |
 | `kitmux resume [snapshot]` | Restore tabs and layouts and resume agent sessions. `-n` shows the plan without running it. |
-| `kitmux tab set --name <name>` | Name the current tab; the name is restored with it. |
+| `kitmux tab name [name]` | Name the current tab; the name is restored with it. Asks for a name if you don't give one. `--tab 2` names the second tab, `--clear` removes the name. |
+| `kitmux tab ls` | List open tabs by position, with their names. |
 | `kitmux timer install \| remove \| status` | Save on a schedule. `--every 30min`, `--keep 168`. |
 
 A `snapshot` is a number from `kitmux ls`, `latest`, or a path to a snapshot file.
@@ -113,7 +117,7 @@ The timer skips a save when nothing has changed since the last snapshot.
 
 - Linux only for now. Process details come from `/proc`, and the timer uses systemd.
 - Remote control has to be unencrypted, so a `remote_control_password` isn't supported.
-- A tab's title is restored only if you set it with `kitmux tab set --name`. Otherwise it's
+- A tab's title is restored only if you named it with `kitmux tab name`. Otherwise it's
   whatever the tab's program last set, which kitmux leaves alone.
 - Scrollback isn't saved.
 

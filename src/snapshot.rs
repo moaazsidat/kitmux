@@ -13,7 +13,7 @@ use crate::procfs;
 /// Bumped when a change would stop an older kitmux from reading a snapshot.
 pub const FORMAT: u32 = 1;
 
-/// The tab name `kitmux tab set --name` records, as a kitty user variable on the
+/// The tab name `kitmux tab name` records, as a kitty user variable on the
 /// tab's windows. A tab's title is otherwise whatever its program last set, so
 /// only a name given this way is restored.
 pub const TAB_NAME_VAR: &str = "kitmux_tab_name";
@@ -80,7 +80,7 @@ pub struct Tab {
     pub id: u64,
     /// The title kitty showed. Informational: see [`TAB_NAME_VAR`].
     pub title: String,
-    /// A name given with `kitmux tab set --name`, restored as the tab's title.
+    /// A name given with `kitmux tab name`, restored as the tab's title.
     #[serde(default)]
     pub name: Option<String>,
     pub is_active: bool,

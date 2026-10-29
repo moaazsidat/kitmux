@@ -87,17 +87,25 @@ enum Command {
 
 #[derive(Subcommand)]
 enum TabAction {
-    /// Set a tab's properties.
-    Set {
-        /// Name the tab. The name is its title from now on and is restored by
-        /// `kitmux resume`; an empty name clears it.
+    /// Name a tab. The name is its title from now on and is restored by
+    /// `kitmux resume`.
+    #[command(visible_alias = "set")]
+    Name {
+        /// The name. Without one, kitmux asks for it.
+        #[arg(conflicts_with = "clear")]
+        name: Option<String>,
+        #[arg(long = "name", hide = true, conflicts_with_all = ["name", "clear"])]
+        name_flag: Option<String>,
+        /// Remove the tab's name.
         #[arg(long)]
-        name: String,
-        /// The tab's kitty id. By default, the tab kitmux runs in, else the
-        /// active tab.
-        #[arg(long)]
-        tab: Option<u64>,
+        clear: bool,
+        /// The tab: its position in its OS window (1 is leftmost), or `id:N` for
+        /// its kitty id. By default, the tab kitmux runs in, else the active tab.
+        #[arg(long, short)]
+        tab: Option<String>,
     },
+    /// List the open tabs and their names.
+    Ls,
 }
 
 #[derive(Subcommand)]
@@ -145,7 +153,16 @@ fn main() {
             },
         ),
         Command::Tab { action } => match action {
-            TabAction::Set { name, tab } => cmd::tab::set_name(socket, tab, &name),
+            TabAction::Name {
+                name,
+                name_flag,
+                clear,
+                tab,
+            } => {
+                let name = if clear { Some(String::new()) } else { name.or(name_flag) };
+                cmd::tab::name(socket, tab.as_deref(), name)
+            }
+            TabAction::Ls => cmd::tab::ls(socket),
         },
         Command::Timer { action } => match action {
             TimerAction::Install { every, keep } => cmd::timer::install(&every, keep),

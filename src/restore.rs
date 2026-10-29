@@ -42,7 +42,7 @@ pub struct OsWindowPlan {
 #[derive(Debug, PartialEq)]
 pub struct TabPlan {
     pub layout: String,
-    /// Set only for a tab named with `kitmux tab set --name`.
+    /// Set only for a tab named with `kitmux tab name`.
     pub title: Option<String>,
     /// In creation order; `Place` refers to earlier entries by index.
     pub windows: Vec<WindowPlan>,
