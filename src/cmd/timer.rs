@@ -1,4 +1,4 @@
-//! `kit timer`: save on a schedule with a systemd user timer.
+//! `kitmux timer`: save on a schedule with a systemd user timer.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -6,11 +6,11 @@ use std::process::Command;
 
 use anyhow::{Context, Result, anyhow, bail};
 
-const NAME: &str = "kit-save";
+const NAME: &str = "kitmux-save";
 
 pub fn install(every: &str, keep: usize) -> Result<()> {
     validate_span(every)?;
-    let exe = std::env::current_exe().context("finding kit's own path")?;
+    let exe = std::env::current_exe().context("finding kitmux's own path")?;
     let exe = exe.canonicalize().unwrap_or(exe);
     let dir = unit_dir()?;
     fs::create_dir_all(&dir).with_context(|| format!("creating {}", dir.display()))?;
@@ -19,7 +19,10 @@ pub fn install(every: &str, keep: usize) -> Result<()> {
     systemctl(&["daemon-reload"])?;
     systemctl(&["enable", "--now", &format!("{NAME}.timer")])?;
     println!("saving every {every} with {} (keeping {keep})", exe.display());
-    println!("units are in {}; `kit timer status` shows the next run", dir.display());
+    println!(
+        "units are in {}; `kitmux timer status` shows the next run",
+        dir.display()
+    );
     Ok(())
 }
 
@@ -58,7 +61,7 @@ pub fn status() -> Result<()> {
 
 fn systemctl(args: &[&str]) -> Result<()> {
     if !cfg!(target_os = "linux") {
-        bail!("kit timer uses systemd, which this system does not have");
+        bail!("kitmux timer uses systemd, which this system does not have");
     }
     let status = Command::new("systemctl")
         .arg("--user")
@@ -95,7 +98,7 @@ fn service_unit(exe: &Path, keep: usize) -> String {
     let exe = exe.display().to_string().replace('%', "%%").replace('"', "\\\"");
     format!(
         "[Unit]\n\
-         Description=Save kitty tabs and agent sessions (kit)\n\
+         Description=Save kitty tabs and agent sessions (kitmux)\n\
          \n\
          [Service]\n\
          Type=oneshot\n\
@@ -106,7 +109,7 @@ fn service_unit(exe: &Path, keep: usize) -> String {
 fn timer_unit(every: &str) -> String {
     format!(
         "[Unit]\n\
-         Description=Save kitty tabs and agent sessions every {every} (kit)\n\
+         Description=Save kitty tabs and agent sessions every {every} (kitmux)\n\
          \n\
          [Timer]\n\
          OnStartupSec={every}\n\
@@ -124,9 +127,9 @@ mod tests {
 
     #[test]
     fn writes_units() {
-        let s = service_unit(Path::new("/opt/kit 100%/kit"), 24);
+        let s = service_unit(Path::new("/opt/kitmux 100%/kitmux"), 24);
         assert!(
-            s.contains("ExecStart=\"/opt/kit 100%%/kit\" save --timer --keep 24\n"),
+            s.contains("ExecStart=\"/opt/kitmux 100%%/kitmux\" save --timer --keep 24\n"),
             "{s}"
         );
         let t = timer_unit("1h");

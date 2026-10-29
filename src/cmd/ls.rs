@@ -1,4 +1,4 @@
-//! `kit ls` and `kit show`: what has been saved.
+//! `kitmux ls` and `kitmux show`: what has been saved.
 
 use std::collections::BTreeMap;
 
@@ -32,7 +32,7 @@ pub fn list(json: bool) -> Result<()> {
         return Ok(());
     }
     if entries.is_empty() {
-        println!("no snapshots yet in {} — run `kit save`", store.dir().display());
+        println!("no snapshots yet in {} — run `kitmux save`", store.dir().display());
         return Ok(());
     }
     println!(
@@ -54,7 +54,7 @@ pub fn list(json: bool) -> Result<()> {
         );
     }
     println!(
-        "\n{} snapshots in {}. `kit show <#>` for detail.",
+        "\n{} snapshots in {}. `kitmux show <#>` for detail.",
         entries.len(),
         store.dir().display()
     );

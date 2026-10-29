@@ -1,5 +1,5 @@
 //! Where snapshots live: one JSON file each, named by when it was taken, in
-//! `$KIT_STATE_DIR`, else `$XDG_STATE_HOME/kit`, else `~/.local/state/kit`.
+//! `$KITMUX_STATE_DIR`, else `$XDG_STATE_HOME/kitmux`, else `~/.local/state/kitmux`.
 //!
 //! Snapshots record command lines and kitty's view of each window's
 //! environment, which can hold secrets, so the directory is private to the
@@ -84,14 +84,14 @@ impl Store {
             }
             match load(&path) {
                 Ok(snapshot) => out.push(Entry { path, snapshot }),
-                Err(err) => eprintln!("kit: skipping {}: {err:#}", path.display()),
+                Err(err) => eprintln!("kitmux: skipping {}: {err:#}", path.display()),
             }
         }
         out.sort_by(|a, b| b.snapshot.taken_at.cmp(&a.snapshot.taken_at).then(b.path.cmp(&a.path)));
         Ok(out)
     }
 
-    /// Finds a snapshot by `latest`, by its number in `kit ls` (1 is the
+    /// Finds a snapshot by `latest`, by its number in `kitmux ls` (1 is the
     /// newest), or by path.
     pub fn resolve(&self, reference: &str) -> Result<Entry> {
         if reference == "latest" {
@@ -114,7 +114,7 @@ impl Store {
         }
         let path = PathBuf::from(reference);
         if !path.exists() {
-            bail!("no snapshot {reference:?}: give a path, a number from `kit ls`, or `latest`");
+            bail!("no snapshot {reference:?}: give a path, a number from `kitmux ls`, or `latest`");
         }
         Ok(Entry {
             snapshot: load(&path)?,
@@ -138,7 +138,7 @@ pub fn load(path: &Path) -> Result<Snapshot> {
     let snap: Snapshot = serde_json::from_slice(&data).with_context(|| format!("parsing {}", path.display()))?;
     if snap.format > crate::snapshot::FORMAT {
         bail!(
-            "{} was written by a newer kit (format {}); upgrade kit to read it",
+            "{} was written by a newer kitmux (format {}); upgrade kitmux to read it",
             path.display(),
             snap.format
         );
@@ -147,14 +147,14 @@ pub fn load(path: &Path) -> Result<Snapshot> {
 }
 
 fn default_dir() -> Result<PathBuf> {
-    if let Some(d) = std::env::var_os("KIT_STATE_DIR") {
+    if let Some(d) = std::env::var_os("KITMUX_STATE_DIR") {
         return Ok(PathBuf::from(d));
     }
     if let Some(d) = std::env::var_os("XDG_STATE_HOME").filter(|d| !d.is_empty()) {
-        return Ok(PathBuf::from(d).join("kit"));
+        return Ok(PathBuf::from(d).join("kitmux"));
     }
     let home = std::env::var_os("HOME").ok_or_else(|| anyhow!("HOME is not set"))?;
-    Ok(PathBuf::from(home).join(".local/state/kit"))
+    Ok(PathBuf::from(home).join(".local/state/kitmux"))
 }
 
 #[cfg(test)]
@@ -205,6 +205,6 @@ mod tests {
         s.format = crate::snapshot::FORMAT + 1;
         let path = dir.path().join("future.json");
         fs::write(&path, serde_json::to_vec(&s).unwrap()).unwrap();
-        assert!(load(&path).unwrap_err().to_string().contains("newer kit"));
+        assert!(load(&path).unwrap_err().to_string().contains("newer kitmux"));
     }
 }

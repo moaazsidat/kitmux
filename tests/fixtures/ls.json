@@ -151,7 +151,7 @@
               }
             ],
             "user_vars": {
-              "kit_tab_name": "api"
+              "kitmux_tab_name": "api"
             }
           },
           {
@@ -178,7 +178,7 @@
               }
             ],
             "user_vars": {
-              "kit_tab_name": "api"
+              "kitmux_tab_name": "api"
             }
           }
         ]

@@ -2,7 +2,7 @@
 //!
 //! Restoring is split in two: [`plan`] turns a snapshot into the windows to
 //! create and where each goes, without touching kitty, and [`execute`] carries
-//! a plan out over remote control. The plan is what `kit resume --dry-run`
+//! a plan out over remote control. The plan is what `kitmux resume --dry-run`
 //! prints and what the tests check.
 
 use std::collections::{HashMap, HashSet};
@@ -42,7 +42,7 @@ pub struct OsWindowPlan {
 #[derive(Debug, PartialEq)]
 pub struct TabPlan {
     pub layout: String,
-    /// Set only for a tab named with `kit tab set --name`.
+    /// Set only for a tab named with `kitmux tab set --name`.
     pub title: Option<String>,
     /// In creation order; `Place` refers to earlier entries by index.
     pub windows: Vec<WindowPlan>,
@@ -373,7 +373,7 @@ pub fn execute(plan: &Plan, target: &Target) -> Result<Vec<u64>> {
                         "goto-layout",
                         json!({ "layout": tab.layout, "match": format!("window_id:{id}") }),
                     ) {
-                        eprintln!("kit: keeping kitty's default layout for a tab: {e:#}");
+                        eprintln!("kitmux: keeping kitty's default layout for a tab: {e:#}");
                     }
                 }
                 ids.push(id);
@@ -443,10 +443,10 @@ mod tests {
             ["fat", "grid", "splits"]
         );
 
-        // Only a tab named with kit gets a title.
+        // Only a tab named with kitmux gets a title.
         assert_eq!(o.tabs[0].title, None);
         assert_eq!(o.tabs[1].title.as_deref(), Some("api"));
-        assert_eq!(o.tabs[1].windows[1].vars, ["kit_tab_name=api"]);
+        assert_eq!(o.tabs[1].windows[1].vars, ["kitmux_tab_name=api"]);
     }
 
     #[test]

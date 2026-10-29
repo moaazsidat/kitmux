@@ -1,10 +1,10 @@
 [package]
-name = "kit"
+name = "kitmux"
 version = "0.1.0"
 edition = "2024"
 description = "Save and restore kitty tabs, layouts, and the coding-agent sessions running in them"
 license = "MIT"
-repository = "https://github.com/moaazsidat/kit"
+repository = "https://github.com/moaazsidat/kitmux"
 readme = "README.md"
 keywords = ["kitty", "terminal", "session", "claude", "restore"]
 categories = ["command-line-utilities"]

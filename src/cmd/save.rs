@@ -1,4 +1,4 @@
-//! `kit save`: snapshot every running kitty.
+//! `kitmux save`: snapshot every running kitty.
 
 use anyhow::Result;
 
@@ -21,7 +21,7 @@ pub fn run(socket: Option<&str>, opts: Options) -> Result<()> {
             return Ok(());
         }
         anyhow::bail!(
-            "no kitty is reachable. kit needs remote control: add `allow_remote_control yes` \
+            "no kitty is reachable. kitmux needs remote control: add `allow_remote_control yes` \
              and `listen_on unix:/tmp/kitty` to kitty.conf and restart kitty, or pass --socket"
         );
     }

@@ -1,12 +1,12 @@
 //! kitty's remote control protocol, spoken directly over its socket.
 //!
 //! A request is `ESC P @kitty-cmd <json> ESC \`, and so is the reply. Talking
-//! to the socket rather than shelling out to `kitty @` means kit works from a
+//! to the socket rather than shelling out to `kitty @` means kitmux works from a
 //! systemd timer, where the kitty binary is often not on PATH.
 //!
 //! Only unencrypted sockets are supported: `allow_remote_control yes` (or
 //! `socket-only`) with `listen_on unix:...`. A `remote_control_password`
-//! requires the encrypted form of the protocol, which kit does not implement.
+//! requires the encrypted form of the protocol, which kitmux does not implement.
 
 use std::fmt;
 use std::io::{Read, Write};
@@ -20,7 +20,7 @@ use serde_json::{Value, json};
 const PREFIX: &[u8] = b"\x1bP@kitty-cmd";
 const SUFFIX: &[u8] = b"\x1b\\";
 
-/// The protocol version kit speaks. kitty accepts requests from older clients.
+/// The protocol version kitmux speaks. kitty accepts requests from older clients.
 const VERSION: [u32; 3] = [0, 43, 0];
 
 /// A kitty does not normally take long to answer, but `launch` waits for a

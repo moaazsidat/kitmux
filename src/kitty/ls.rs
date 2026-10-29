@@ -1,4 +1,4 @@
-//! The parts of `kitty @ ls` that kit reads. Every field defaults, so a kitty
+//! The parts of `kitty @ ls` that kitmux reads. Every field defaults, so a kitty
 //! that adds, renames, or drops one does not break parsing; the full output is
 //! kept alongside in each snapshot regardless.
 

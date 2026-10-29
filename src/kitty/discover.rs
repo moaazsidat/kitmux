@@ -2,7 +2,7 @@
 //!
 //! kitty appends `-<pid>` to a `listen_on` socket path unless the path already
 //! contains `{kitty_pid}`, so the configured path is a pattern rather than an
-//! address. kit is often run from outside any kitty window (a systemd timer),
+//! address. kitmux is often run from outside any kitty window (a systemd timer),
 //! where `KITTY_LISTEN_ON` is not set, so it reads `kitty.conf` and scans the
 //! usual socket directories as well.
 
@@ -209,10 +209,10 @@ mod tests {
 
     #[test]
     fn expands_variables() {
-        // SAFETY: tests in this module do not read KIT_TEST_VAR concurrently.
-        unsafe { std::env::set_var("KIT_TEST_VAR", "/run/x") };
-        assert_eq!(expand_vars("unix:${KIT_TEST_VAR}/kitty"), "unix:/run/x/kitty");
-        assert_eq!(expand_vars("unix:$KIT_TEST_VAR/kitty"), "unix:/run/x/kitty");
+        // SAFETY: tests in this module do not read KITMUX_TEST_VAR concurrently.
+        unsafe { std::env::set_var("KITMUX_TEST_VAR", "/run/x") };
+        assert_eq!(expand_vars("unix:${KITMUX_TEST_VAR}/kitty"), "unix:/run/x/kitty");
+        assert_eq!(expand_vars("unix:$KITMUX_TEST_VAR/kitty"), "unix:/run/x/kitty");
         assert_eq!(expand_vars("unix:/tmp/kitty"), "unix:/tmp/kitty");
     }
 

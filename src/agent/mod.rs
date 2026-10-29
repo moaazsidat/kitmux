@@ -1,4 +1,4 @@
-//! Coding agents kit knows how to resume.
+//! Coding agents kitmux knows how to resume.
 //!
 //! An adapter recognises its agent from a process's argv, finds the session
 //! that process is writing, and builds the command that resumes it. Adding an
@@ -26,7 +26,7 @@ pub struct Session {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub env: Vec<String>,
     /// The command that resumes this session, as recorded at save time. Used
-    /// for an agent kind this build of kit does not know.
+    /// for an agent kind this build of kitmux does not know.
     pub resume: Vec<String>,
 }
 

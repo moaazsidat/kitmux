@@ -1,4 +1,4 @@
-//! What kit needs to know about processes, read from /proc.
+//! What kitmux needs to know about processes, read from /proc.
 //!
 //! Everything here answers "unknown" (None or empty) rather than failing: a
 //! process can exit between two reads, and one unreadable process must never

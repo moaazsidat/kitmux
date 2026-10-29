@@ -1,6 +1,6 @@
 //! A snapshot: everything needed to rebuild kitty's tabs and resume the agents
 //! in them, plus kitty's own `ls` output verbatim, so nothing kitty reported
-//! is lost even if kit does not use it yet.
+//! is lost even if kitmux does not use it yet.
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -10,18 +10,19 @@ use crate::agent;
 use crate::kitty::{self, Client};
 use crate::procfs;
 
-/// Bumped when a change would stop an older kit from reading a snapshot.
+/// Bumped when a change would stop an older kitmux from reading a snapshot.
 pub const FORMAT: u32 = 1;
 
-/// The tab name `kit tab set --name` records, as a kitty user variable on the
+/// The tab name `kitmux tab set --name` records, as a kitty user variable on the
 /// tab's windows. A tab's title is otherwise whatever its program last set, so
 /// only a name given this way is restored.
-pub const TAB_NAME_VAR: &str = "kit_tab_name";
+pub const TAB_NAME_VAR: &str = "kitmux_tab_name";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Snapshot {
     pub format: u32,
-    pub kit_version: String,
+    #[serde(alias = "kit_version")]
+    pub kitmux_version: String,
     pub taken_at: DateTime<Utc>,
     #[serde(default)]
     pub hostname: Option<String>,
@@ -79,7 +80,7 @@ pub struct Tab {
     pub id: u64,
     /// The title kitty showed. Informational: see [`TAB_NAME_VAR`].
     pub title: String,
-    /// A name given with `kit tab set --name`, restored as the tab's title.
+    /// A name given with `kitmux tab set --name`, restored as the tab's title.
     #[serde(default)]
     pub name: Option<String>,
     pub is_active: bool,
@@ -129,13 +130,13 @@ impl Snapshot {
                         instances.push(i);
                     }
                 }
-                Err(e) => eprintln!("kit: skipping kitty at {}: {e:#}", c.addr),
+                Err(e) => eprintln!("kitmux: skipping kitty at {}: {e:#}", c.addr),
             }
         }
         anyhow::ensure!(!instances.is_empty(), "no kitty answered remote control");
         Ok(Snapshot {
             format: FORMAT,
-            kit_version: env!("CARGO_PKG_VERSION").to_string(),
+            kitmux_version: env!("CARGO_PKG_VERSION").to_string(),
             taken_at: Utc::now(),
             hostname: std::fs::read_to_string("/proc/sys/kernel/hostname")
                 .ok()
@@ -297,7 +298,7 @@ pub mod tests {
             .collect();
         Snapshot {
             format: FORMAT,
-            kit_version: "0.0.0".into(),
+            kitmux_version: "0.0.0".into(),
             taken_at: "2026-01-02T03:04:05Z".parse().unwrap(),
             hostname: Some("host".into()),
             reason: "manual".into(),

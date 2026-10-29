@@ -1,4 +1,4 @@
-//! `kit resume`: rebuild a snapshot's tabs and resume its agent sessions.
+//! `kitmux resume`: rebuild a snapshot's tabs and resume its agent sessions.
 
 use std::process::Command;
 use std::time::{Duration, Instant};
@@ -37,7 +37,7 @@ pub fn run(socket: Option<&str>, opts: Options) -> Result<()> {
 
     let (target, bootstrap) = target(socket)?;
     restore::execute(&plan, &target)?;
-    // A kitty kit started opens with a shell nobody asked for.
+    // A kitty kitmux started opens with a shell nobody asked for.
     for id in bootstrap {
         let _ = target
             .client
@@ -66,7 +66,10 @@ fn pick(reference: Option<&str>) -> Result<Entry> {
     }
     let mut all = store.list()?.into_iter();
     let Some(newest) = all.next() else {
-        bail!("no snapshots yet in {} — run `kit save` first", store.dir().display());
+        bail!(
+            "no snapshots yet in {} — run `kitmux save` first",
+            store.dir().display()
+        );
     };
     if !newest.snapshot.of_running_kitty() {
         return Ok(newest);
@@ -74,7 +77,7 @@ fn pick(reference: Option<&str>) -> Result<Entry> {
     match all.find(|e| !e.snapshot.of_running_kitty()) {
         Some(e) => {
             println!(
-                "(newest snapshot is of the kitty running now; using the last one before it — `kit resume latest` for the newest)"
+                "(newest snapshot is of the kitty running now; using the last one before it — `kitmux resume latest` for the newest)"
             );
             Ok(e)
         }
@@ -90,7 +93,7 @@ fn target(socket: Option<&str>) -> Result<(Target, Vec<u64>)> {
     let window = std::env::var("KITTY_WINDOW_ID").ok().and_then(|v| v.parse().ok());
 
     if let Some(c) = here.as_ref().and_then(|h| clients.iter().find(|c| &c.addr == h)) {
-        // Run from inside kitty: tabs go next to the window kit was run in.
+        // Run from inside kitty: tabs go next to the window kitmux was run in.
         return Ok((
             Target {
                 client: c.clone(),
@@ -134,7 +137,7 @@ fn spawn_kitty() -> Result<(Client, Vec<u64>)> {
         None
     } else {
         let dir = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/tmp".to_string());
-        let addr = format!("unix:{dir}/kitty-kit-{}", std::process::id());
+        let addr = format!("unix:{dir}/kitty-kitmux-{}", std::process::id());
         cmd.args(["--listen-on", &addr]);
         Some(addr)
     };

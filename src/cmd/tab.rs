@@ -1,4 +1,4 @@
-//! `kit tab`: change tabs in a way kit remembers.
+//! `kitmux tab`: change tabs in a way kitmux remembers.
 
 use anyhow::{Result, anyhow, bail};
 use serde_json::json;
@@ -7,8 +7,8 @@ use crate::kitty::{Addr, Client, discover, ls};
 use crate::snapshot::TAB_NAME_VAR;
 
 /// Names a tab. The name becomes the tab's title and is recorded as a user
-/// variable on its windows, so `kit save` knows it was chosen rather than set
-/// by whatever ran in the tab, and `kit resume` gives it back. An empty name
+/// variable on its windows, so `kitmux save` knows it was chosen rather than set
+/// by whatever ran in the tab, and `kitmux resume` gives it back. An empty name
 /// clears it.
 pub fn set_name(socket: Option<&str>, tab: Option<u64>, name: &str) -> Result<()> {
     let client = client(socket)?;
@@ -51,7 +51,7 @@ pub fn set_name(socket: Option<&str>, tab: Option<u64>, name: &str) -> Result<()
     Ok(())
 }
 
-/// The kitty to act on: the one kit runs in, else the only one running.
+/// The kitty to act on: the one kitmux runs in, else the only one running.
 fn client(socket: Option<&str>) -> Result<Client> {
     let clients = discover::find(socket)?;
     let here = std::env::var("KITTY_LISTEN_ON").ok().and_then(|v| Addr::parse(&v).ok());

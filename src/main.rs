@@ -1,4 +1,4 @@
-//! kit: save and restore kitty tabs, layouts, and the coding agent sessions
+//! kitmux: save and restore kitty tabs, layouts, and the coding agent sessions
 //! running in them.
 
 mod agent;
@@ -16,7 +16,7 @@ use clap::{Parser, Subcommand};
 struct Cli {
     /// kitty's remote control address, e.g. unix:/tmp/kitty-1234. By default
     /// every kitty that answers is used.
-    #[arg(long, global = true, env = "KIT_KITTY_SOCKET")]
+    #[arg(long, global = true, env = "KITMUX_KITTY_SOCKET")]
     socket: Option<String>,
 
     #[command(subcommand)]
@@ -32,7 +32,7 @@ enum Command {
         #[arg(long)]
         timer: bool,
         /// How many snapshots to keep; older ones are deleted.
-        #[arg(long, default_value_t = 168, env = "KIT_KEEP")]
+        #[arg(long, default_value_t = 168, env = "KITMUX_KEEP")]
         keep: usize,
     },
     /// List saved snapshots, newest first.
@@ -42,7 +42,7 @@ enum Command {
     },
     /// Show what a snapshot holds and how each agent would be resumed.
     Show {
-        /// A path, a number from `kit ls`, or `latest`.
+        /// A path, a number from `kitmux ls`, or `latest`.
         #[arg(default_value = "latest")]
         snapshot: String,
         /// Print the whole snapshot, including kitty's raw state.
@@ -55,7 +55,7 @@ enum Command {
     /// with no kitty running, one is started. Tabs whose agent sessions are
     /// already running are skipped.
     Resume {
-        /// A path, a number from `kit ls`, or `latest`. By default, the newest
+        /// A path, a number from `kitmux ls`, or `latest`. By default, the newest
         /// snapshot of a kitty that is no longer running.
         snapshot: Option<String>,
         /// Restore the layout only: every window gets a shell.
@@ -73,7 +73,7 @@ enum Command {
         #[arg(long, short = 'n')]
         dry_run: bool,
     },
-    /// Change tabs in ways kit remembers.
+    /// Change tabs in ways kitmux remembers.
     Tab {
         #[command(subcommand)]
         action: TabAction,
@@ -90,10 +90,10 @@ enum TabAction {
     /// Set a tab's properties.
     Set {
         /// Name the tab. The name is its title from now on and is restored by
-        /// `kit resume`; an empty name clears it.
+        /// `kitmux resume`; an empty name clears it.
         #[arg(long)]
         name: String,
-        /// The tab's kitty id. By default, the tab kit runs in, else the
+        /// The tab's kitty id. By default, the tab kitmux runs in, else the
         /// active tab.
         #[arg(long)]
         tab: Option<u64>,
@@ -154,7 +154,7 @@ fn main() {
         },
     };
     if let Err(e) = result {
-        eprintln!("kit: {e:#}");
+        eprintln!("kitmux: {e:#}");
         std::process::exit(1);
     }
 }
