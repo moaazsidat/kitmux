@@ -32,7 +32,7 @@ session in its own tab, with the same flags it was started with.
 ## Install
 
 ```bash
-cargo install --git https://github.com/moaazsidat/kitmux
+cargo install kitmux
 kitmux timer install        # save every hour (systemd user timer)
 ```
 
